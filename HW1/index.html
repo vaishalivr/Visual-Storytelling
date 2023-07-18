@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>World Happiness Index</title>
+    <style>
+      svg {
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <svg id="mySVG" width="595" height="842"></svg>
+    <button onclick="downloadImageAsSVG()">Download as SVG</button>
+
+    <script>
+      function generateCircles(data) {
+        const svg = document.getElementById("mySVG");
+        const circleRadiusMultiplier = 2;
+        const fontFamily = "Myriad Pro";
+        const fontSize = 10;
+
+        const circlesGroup = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "g"
+        );
+        svg.appendChild(circlesGroup);
+
+        const circles = [];
+
+        function circleOverlaps(circle, otherCircles) {
+          for (let i = 0; i < otherCircles.length; i++) {
+            const otherCircle = otherCircles[i];
+            const dx = circle.x - otherCircle.x;
+            const dy = circle.y - otherCircle.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < circle.radius + otherCircle.radius) {
+              return true; // Overlapping detected
+            }
+          }
+          return false; // No overlapping
+        }
+
+        for (let i = 0; i < data.length; i++) {
+          const country = data[i].country;
+          const ladderScore = data[i].ladderScore;
+
+          const circleDiameter = ladderScore * circleRadiusMultiplier;
+          const circleRadius = circleDiameter / 2;
+
+          let attempts = 0;
+          let circle;
+          do {
+            const x =
+              Math.random() * (svg.width.baseVal.value - circleDiameter) +
+              circleRadius;
+            const y =
+              Math.random() * (svg.height.baseVal.value - circleDiameter) +
+              circleRadius;
+
+            circle = { x, y, radius: circleRadius };
+            attempts++;
+          } while (circleOverlaps(circle, circles) && attempts < 100);
+
+          if (attempts < 100) {
+            circles.push(circle);
+
+            const circleElement = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "circle"
+            );
+            circleElement.setAttribute("cx", circle.x);
+            circleElement.setAttribute("cy", circle.y);
+            circleElement.setAttribute("r", circle.radius);
+            circleElement.setAttribute("stroke", "black");
+            circleElement.setAttribute("fill", "none");
+
+            const textElement = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "text"
+            );
+            textElement.setAttribute("x", circle.x);
+            textElement.setAttribute("y", circle.y + circle.radius + 5); // Adjust the distance here
+            textElement.setAttribute("text-anchor", "middle");
+            textElement.setAttribute("font-family", fontFamily);
+            textElement.setAttribute("font-size", fontSize);
+
+            const countryText = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "tspan"
+            );
+            countryText.setAttribute("x", circle.x);
+            countryText.setAttribute("dy", "0.6em");
+            countryText.textContent = `${country}:`;
+
+            const scoreText = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "tspan"
+            );
+            scoreText.setAttribute("x", circle.x);
+            scoreText.setAttribute("dy", "1.2em");
+            scoreText.textContent = ladderScore.toFixed(3);
+
+            textElement.appendChild(countryText);
+            textElement.appendChild(scoreText);
+
+            const circleGroup = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "g"
+            );
+            circleGroup.appendChild(circleElement);
+            circleGroup.appendChild(textElement);
+
+            circlesGroup.appendChild(circleGroup);
+          }
+        }
+      }
+
+      const data = [
+        { country: "Finland", ladderScore: 7.804 },
+        { country: "Denmark", ladderScore: 7.586 },
+        { country: "Iceland", ladderScore: 7.53 },
+        { country: "Israel", ladderScore: 7.473 },
+        { country: "Netherlands", ladderScore: 7.403 },
+        { country: "Sweden", ladderScore: 7.395 },
+        { country: "Norway", ladderScore: 7.315 },
+        { country: "Switzerland", ladderScore: 7.24 },
+        { country: "Luxembourg", ladderScore: 7.228 },
+        { country: "New Zealand", ladderScore: 7.123 },
+        { country: "Austria", ladderScore: 7.097 },
+        { country: "Australia", ladderScore: 7.095 },
+        { country: "Canada", ladderScore: 6.961 },
+        { country: "Ireland", ladderScore: 6.911 },
+        { country: "United States", ladderScore: 6.894 },
+        { country: "Germany", ladderScore: 6.892 },
+        { country: "Belgium", ladderScore: 6.859 },
+        { country: "Czechia", ladderScore: 6.845 },
+        { country: "United Kingdom", ladderScore: 6.796 },
+        { country: "Lithuania", ladderScore: 6.763 },
+        { country: "France", ladderScore: 6.661 },
+        { country: "Slovenia", ladderScore: 6.65 },
+        { country: "Costa Rica", ladderScore: 6.609 },
+        { country: "Romania", ladderScore: 6.589 },
+        { country: "Singapore", ladderScore: 6.587 },
+        { country: "United Arab Emirates", ladderScore: 6.571 },
+        { country: "Taiwan Province of China", ladderScore: 6.535 },
+        { country: "Uruguay", ladderScore: 6.494 },
+        { country: "Slovakia", ladderScore: 6.469 },
+        { country: "Saudi Arabia", ladderScore: 6.463 },
+        { country: "Estonia", ladderScore: 6.455 },
+        { country: "Spain", ladderScore: 6.436 },
+        { country: "Italy", ladderScore: 6.405 },
+        { country: "Kosovo", ladderScore: 6.368 },
+        { country: "Chile", ladderScore: 6.334 },
+        { country: "Mexico", ladderScore: 6.33 },
+        { country: "Malta", ladderScore: 6.3 },
+        { country: "Panama", ladderScore: 6.265 },
+        { country: "Poland", ladderScore: 6.26 },
+        { country: "Nicaragua", ladderScore: 6.259 },
+        { country: "Latvia", ladderScore: 6.213 },
+        { country: "Bahrain", ladderScore: 6.173 },
+        { country: "Guatemala", ladderScore: 6.15 },
+        { country: "Kazakhstan", ladderScore: 6.144 },
+        { country: "Serbia", ladderScore: 6.144 },
+        { country: "Cyprus", ladderScore: 6.13 },
+        { country: "Japan", ladderScore: 6.129 },
+        { country: "Croatia", ladderScore: 6.125 },
+        { country: "Brazil", ladderScore: 6.125 },
+        { country: "El Salvador", ladderScore: 6.122 },
+        { country: "Hungary", ladderScore: 6.041 },
+        { country: "Argentina", ladderScore: 6.024 },
+        { country: "Honduras", ladderScore: 6.023 },
+        { country: "Uzbekistan", ladderScore: 6.014 },
+        { country: "Malaysia", ladderScore: 6.012 },
+        { country: "Portugal", ladderScore: 5.968 },
+        { country: "South Korea", ladderScore: 5.951 },
+        { country: "Greece", ladderScore: 5.931 },
+        { country: "Mauritius", ladderScore: 5.902 },
+        { country: "Thailand", ladderScore: 5.843 },
+        { country: "Mongolia", ladderScore: 5.84 },
+        { country: "Kyrgyzstan", ladderScore: 5.825 },
+        { country: "Moldova", ladderScore: 5.819 },
+        { country: "China", ladderScore: 5.818 },
+        { country: "Vietnam", ladderScore: 5.763 },
+        { country: "Paraguay", ladderScore: 5.738 },
+        { country: "Montenegro", ladderScore: 5.722 },
+        { country: "Jamaica", ladderScore: 5.703 },
+        { country: "Bolivia", ladderScore: 5.684 },
+        { country: "Russia", ladderScore: 5.661 },
+        { country: "Bosnia and Herzegovina", ladderScore: 5.633 },
+        { country: "Colombia", ladderScore: 5.63 },
+        { country: "Dominican Republic", ladderScore: 5.569 },
+        { country: "Ecuador", ladderScore: 5.559 },
+        { country: "Peru", ladderScore: 5.526 },
+        { country: "Philippines", ladderScore: 5.523 },
+        { country: "Bulgaria", ladderScore: 5.466 },
+        { country: "Nepal", ladderScore: 5.36 },
+        { country: "Armenia", ladderScore: 5.342 },
+        { country: "Tajikistan", ladderScore: 5.33 },
+        { country: "Algeria", ladderScore: 5.329 },
+        { country: "Hong Kong S.A.R. of China", ladderScore: 5.308 },
+        { country: "Albania", ladderScore: 5.277 },
+        { country: "Indonesia", ladderScore: 5.277 },
+        { country: "South Africa", ladderScore: 5.275 },
+        { country: "Congo (Brazzaville)", ladderScore: 5.267 },
+        { country: "North Macedonia", ladderScore: 5.254 },
+        { country: "Venezuela", ladderScore: 5.211 },
+        { country: "Laos", ladderScore: 5.111 },
+        { country: "Georgia", ladderScore: 5.109 },
+        { country: "Guinea", ladderScore: 5.072 },
+        { country: "Ukraine", ladderScore: 5.071 },
+        { country: "Ivory Coast", ladderScore: 5.053 },
+        { country: "Gabon", ladderScore: 5.035 },
+        { country: "Nigeria", ladderScore: 4.981 },
+        { country: "Cameroon", ladderScore: 4.973 },
+        { country: "Mozambique", ladderScore: 4.954 },
+        { country: "Iraq", ladderScore: 4.941 },
+        { country: "State of Palestine", ladderScore: 4.908 },
+        { country: "Morocco", ladderScore: 4.903 },
+        { country: "Iran", ladderScore: 4.876 },
+        { country: "Senegal", ladderScore: 4.855 },
+        { country: "Mauritania", ladderScore: 4.724 },
+        { country: "Burkina Faso", ladderScore: 4.638 },
+        { country: "Namibia", ladderScore: 4.631 },
+        { country: "Turkiye", ladderScore: 4.614 },
+        { country: "Ghana", ladderScore: 4.605 },
+        { country: "Pakistan", ladderScore: 4.555 },
+        { country: "Niger", ladderScore: 4.501 },
+        { country: "Tunisia", ladderScore: 4.497 },
+        { country: "Kenya", ladderScore: 4.487 },
+        { country: "Sri Lanka", ladderScore: 4.442 },
+        { country: "Uganda", ladderScore: 4.432 },
+        { country: "Chad", ladderScore: 4.397 },
+        { country: "Cambodia", ladderScore: 4.393 },
+        { country: "Benin", ladderScore: 4.374 },
+        { country: "Myanmar", ladderScore: 4.372 },
+        { country: "Bangladesh", ladderScore: 4.282 },
+        { country: "Gambia", ladderScore: 4.279 },
+        { country: "Mali", ladderScore: 4.198 },
+        { country: "Egypt", ladderScore: 4.17 },
+        { country: "Togo", ladderScore: 4.137 },
+        { country: "Jordan", ladderScore: 4.12 },
+        { country: "Ethiopia", ladderScore: 4.091 },
+        { country: "Liberia", ladderScore: 4.042 },
+        { country: "India", ladderScore: 4.036 },
+        { country: "Madagascar", ladderScore: 4.019 },
+        { country: "Zambia", ladderScore: 3.982 },
+        { country: "Tanzania", ladderScore: 3.694 },
+        { country: "Comoros", ladderScore: 3.545 },
+        { country: "Malawi", ladderScore: 3.495 },
+        { country: "Botswana", ladderScore: 3.435 },
+        { country: "Congo (Kinshasa)", ladderScore: 3.207 },
+        { country: "Zimbabwe", ladderScore: 3.204 },
+        { country: "Sierra Leone", ladderScore: 3.138 },
+        { country: "Lebanon", ladderScore: 2.392 },
+        { country: "Afghanistan", ladderScore: 1.859 },
+      ];
+
+      generateCircles(data);
+
+      function downloadImageAsSVG() {
+        const svg = document.getElementById("mySVG");
+        const svgData = new XMLSerializer().serializeToString(svg);
+        const blob = new Blob([svgData], {
+          type: "image/svg+xml;charset=utf-8",
+        });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "image.svg";
+        a.click();
+
+        URL.revokeObjectURL(url);
+      }
+    </script>
+  </body>
+</html>
